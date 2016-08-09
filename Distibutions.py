@@ -1,4 +1,4 @@
-from random import random
+from random import random, randint()
 class Distribution():
     def __init__(self):
         print "Distribution"
@@ -45,3 +45,18 @@ class NegBin():
     #geometrica
     def __init__(self):
         print "not available"
+
+class UniformIntegerBetweenAandB(Distribution):
+    def __init__(self, A=None, B=None):
+        if A is None:
+            self.initial = 0
+        else:
+            self.final = A
+
+        if B is None:
+            self.initial = 0
+        else:
+            self.final = B
+
+    def random(self):
+        return randint(self.initial, self.final)
