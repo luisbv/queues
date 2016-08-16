@@ -7,23 +7,42 @@ class Distribution():
         return random
     def sample(self, size):
         return [self.random() for x in xrange(size)]
+    def expectation(self):
+        return None
+    def variance(self):
+        return None
 
 class Bernoulli(Distribution):
     def __init__(self, p):
-        self.sucess = p
+        self.p = p # sucess
 
     def random(self):
-        return 1*(random() <= self.sucess) # return 1 or 0
+        return 1*(random() <= self.p) # return 1 or 0
+
+    def expectation(self):
+        return self.p
+
+    def variance(self):
+        return self.p * (1 - self.p)
 
 class Binomial(Bernoulli):
     def __init__(self, n, p):
-        self.rep = n
+        self.n = n
+        self.p = p
         Bernoulli.__init__(self, p)
+
     def random(self):
-        return sum([Bernoulli.random(self) for b in xrange(self.rep)])
+        return sum([Bernoulli.random(self) for b in xrange(self.n)])
+
+    def expectation(self):
+        return self.n * self.p
+
+    def variance(self):
+        return self.n * self.p * (1 - self.p)
 
 class PseudoPoisson(Binomial):
     def __init__(self, lambda_):
+        self.lambda_ = lambda_
         n = 10000
         p = 1.0 * lambda_ / n
         print lambda_, n, p
@@ -31,6 +50,12 @@ class PseudoPoisson(Binomial):
 
     def random(self):
         return Binomial.random(self)
+
+    def expectation(self):
+        return self.lambda_
+
+    def variance(self):
+        return self.lambda_
 
 class Multinomial(Binomial):
     def __init__(self, n, events):
@@ -47,22 +72,35 @@ class Multinomial(Binomial):
 
 class Geometric(Bernoulli):
     def __init__(self, p):
+        self.p = p
         Bernoulli.__init__(self,p)
+
     def random(self):
         counter = 0
-
         while Bernoulli.random(self) == 0:
             counter += 1
-
         return counter
+
+    def expectation(self):
+        return 1.0 / self.p
+
+    def variance(self):
+        return (1.0 - self.p) / self.p
 
 class NegBin(Geometric):
     def __init__(self, n, p):
         self.n = n
+        self.p = p
         Geometric.__init__(self, p)
+
     def random(self):
         return sum([Geometric.random(self) for x in xrange(self.n)])
 
+    def expectation(self):
+        retunr self.n / self.p
+
+    def variance(self):
+        return self.n * (1.0 - self.p) / (self.p ** 2)
 class UniformInteger(Distribution):
     def __init__(self, A = 0, B = 10):
         self.initial = A
