@@ -1,4 +1,5 @@
 from random import random, randint
+from math import log, sqrt, cos, pi
 import BasicProbability as bs
 class Distribution():
     def __init__(self):
@@ -12,12 +13,14 @@ class Distribution():
     def variance(self):
         return None
 
+# DISCRETE DISTRIBUTIONS
+
 class Bernoulli(Distribution):
     def __init__(self, p):
         self.p = p # sucess
 
     def random(self):
-        return 1*(random() <= self.p) # return 1 or 0
+        return 1 * (random() <= self.p) # return 1 or 0
 
     def expectation(self):
         return self.p
@@ -97,10 +100,38 @@ class NegBin(Geometric):
         return sum([Geometric.random(self) for x in xrange(self.n)])
 
     def expectation(self):
-        retunr self.n / self.p
+        return self.n / self.p
 
     def variance(self):
         return self.n * (1.0 - self.p) / (self.p ** 2)
+
+# CONTINUOUS DISTRIBUTIONS
+class Exponential(Distribution):
+    def __init__(self, lambda_):
+        self.lambda_ = lambda_
+
+    def random(self):
+        return - log (random()) / self.lambda_
+
+class Erlang(Exponential):
+    def __init__(self, n, lambda_):
+        self.n = n
+        self.lambda_ = lambda_
+        Exponential.__init__(self, lambda_)
+
+    def random(self):
+        return sum([Exponential.random(self) for x in xrange(self.n)])
+
+class Normal(Distribution):
+    def __init__(self, miu=0, sigma2=1):
+        self.miu = miu
+        self.sigma2 = sigma2
+    def random(self):
+        Z = sqrt(- 2 * log(random())) * cos(2 * pi * random())
+        X = sqrt(self.sigma2) * Z + self.miu
+        return X
+
+# OTHER DISTRIBUTIONS
 class UniformInteger(Distribution):
     def __init__(self, A = 0, B = 10):
         self.initial = A
@@ -110,7 +141,7 @@ class UniformInteger(Distribution):
         return randint(self.initial, self.final)
 
 class PseudoUniform(UniformInteger):
-    def __init__(self, N=100):
+    def __init__(self, N = 100):
         self.N = N
         self.M = sum([UniformInteger().random() for x in xrange(self.N)])
         #UniformInteger.__init__(self)
@@ -183,5 +214,8 @@ def main():
 
     d6 = Multinomial(10, [A,B])
     print "Multinomial", d6.random()
+
+    d7 = Normal(0, 1)
+    print "Normal", d7.sample(10)
 if __name__ == "__main__":
     main()
