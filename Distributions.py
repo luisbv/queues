@@ -1,6 +1,8 @@
 from random import random, randint
 from math import log, sqrt, cos, pi
 import BasicProbability as bs
+from collections import defaultdict
+
 class Distribution():
     def __init__(self):
         print "Distribution"
@@ -182,6 +184,26 @@ class PseudoUniform(UniformInteger):
                         break
         return values
 
+def plotHistogram(freq):
+
+    import matplotlib.pyplot as plt
+    plt.hist(freq)
+    plt.title("Gaussian Histogram")
+    plt.xlabel("Value")
+    plt.ylabel("Frequency")
+    plt.show()
+    # x = list()
+    # y = list()
+    # t = 1.0 * sum(freq.values())
+    # for b in sorted(freq):
+    #     x.append(b)
+    #     y.append(freq[b]/t)
+    # print freq
+    # plt.plot(x, y)
+    # plt.show()
+    # #plt.pause(10)
+    # #plt.clf()
+
 def main():
     d0 = UniformInteger()
     print "UniformInteger",d0.sample(20)
@@ -217,5 +239,7 @@ def main():
 
     d7 = Normal(0, 1)
     print "Normal", d7.sample(10)
+    #plotHistogram(frequency(d7.sample(100000)))
+    plotHistogram(d7.sample(100000))
 if __name__ == "__main__":
     main()
