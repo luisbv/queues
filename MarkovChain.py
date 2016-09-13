@@ -89,6 +89,51 @@ class MarkovProcess(dict):
 
         return self.state
 
+class BirthDeath():
+    def __init__(self, lambda_, mu, n=100):
+        self.lambda_ = lambda_
+        self.mu = mu
+        self.n = n
+        self.events = {"b": 0, "d": 0}
+        self.probDeath = None
+        self.probBirth = None
+        self.timeVisits = dict()
+    def start(self):
+        self.t = 0.0
+        self.i = self.n
+
+    def birthRate(self):
+        self.lambda_ *= 0
+        return self.lambda_
+
+    def deathRate(self):
+        self.mu *= self.i
+        return self.mu
+
+    def step(self):
+        self.totalRate = self.lambda_ + self.mu
+        self.probBirth = 1.0 * self.lambda_ / self.totalRate
+        self.probDeath = 1.0 * self.mu / self.totalRate
+
+        if random() <= self.probDeath:
+            self.events["d"] += 1
+            duration = Exponential(self.mu).random()
+            self.i -= 1
+        else:
+            self.events["b"] += 1
+            duration = Exponential(self.lambda_).random()
+            self.i += 1
+        self.t += duration
+
+    def simulation(self, maxTime=30):
+        self.start()
+
+        while self.i > 0 and self.t < maxTime:
+            self.step()
+
+        if self.i not in self.timeVisits:
+            self.timeVisits[self.i] = 0
+        self.timeVisits[self.i] += 1
 
 def main():
     M = Markov()
@@ -142,5 +187,11 @@ def main():
         MP.step()
 
     print MP.timeVisits
+
+    BD = BirthDeath(0, 0.1, 100)
+    maxRep = 1000
+    for r in xrange(maxRep):
+        BD.simulation(30)
+    print sorted(BD.timeVisits)
 if __name__ == "__main__":
     main()
