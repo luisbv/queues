@@ -98,6 +98,7 @@ class BirthDeath():
         self.probDeath = None
         self.probBirth = None
         self.timeVisits = dict()
+
     def start(self):
         self.t = 0.0
         self.i = self.n
@@ -135,7 +136,22 @@ class BirthDeath():
             self.timeVisits[self.i] = 0
         self.timeVisits[self.i] += 1
 
+class PoissonProcess():
+    def __init__(self, lambda_):
+        ''' interval from t1 to t2'''
+        self.lambda_ = lambda_
+
+    def arrivals(self, t1, t2):
+        '''t2 = duration '''
+        N = 0
+        t = t1
+        while t < t2:
+            N += 1
+            t += Exponential(self.lambda_).random()
+        return N - 1
+
 def main():
+    print 'Markv Chain'
     M = Markov()
     ''' Transition Matrix
         a     b     c     d     e
@@ -159,7 +175,8 @@ def main():
 
     print M.countVisits
 
-
+    print
+    print 'Markv process'
     MP = MarkovProcess()
     ''' Transition Matrix
         a     b     c     d
@@ -188,10 +205,17 @@ def main():
 
     print MP.timeVisits
 
+    print
+    print 'Birth Death Process'
     BD = BirthDeath(0, 0.1, 100)
-    maxRep = 1000
+    maxRep = 100
     for r in xrange(maxRep):
         BD.simulation(30)
     print sorted(BD.timeVisits)
+
+    print
+    print 'Poisson process'
+    PP = PoissonProcess(10)
+    print PP.arrivals(0.0,30)
 if __name__ == "__main__":
     main()
