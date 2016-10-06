@@ -21,7 +21,7 @@ class Server():
         self.inDeparture = False
         self.index = index
 
-class Sistem():
+class System():
     def __init__(self, numberServers):
         self.t = 0.0
         self.N = 0
@@ -89,7 +89,7 @@ class Sistem():
         server.isBusy = False
         server.inDeparture = False
 
-S = Sistem(5)
+S = System(5)
 
 while S.t < TOTAL_TIME:
     S.update()
